@@ -38,6 +38,9 @@ securecloud_*/
 securecloud_run_*/
 securecloud_cli_*/
 
+# ── Python version pin (committed intentionally) ──────────────────────────────
+# .python-version is tracked — do NOT add it here
+
 # ── Node (package-lock is empty — no need to track it) ───────────────────────
 node_modules/
 package-lock.json
