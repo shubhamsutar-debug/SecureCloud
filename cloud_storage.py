@@ -1,80 +1,128 @@
-from pathlib import Path
+"""
+cloud_storage.py — Vercel Blob upload / download via REST API.
+
+Uses the Vercel Blob REST API directly with the requests library.
+This replaces the previous subprocess-based Vercel CLI approach so the
+code works identically in:
+  - local development (python app.py / python main.py)
+  - Vercel serverless functions (no CLI binary available at runtime)
+
+Environment variable required:
+  BLOB_READ_WRITE_TOKEN   — set in .env.local locally, Vercel project env in production.
+"""
+
+from __future__ import annotations
+
 import os
-import shutil
-import subprocess
+from pathlib import Path
+
+import requests
 
 
-def _ensure_env():
-    """Ensure environment variables from .env.local are loaded and sanitized."""
-    env_local = Path(".env.local")
-    if env_local.exists():
-        for line in env_local.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                k, _, v = line.partition("=")
-                k = k.strip()
-                v = v.strip().strip("'\"")
-                if k not in os.environ or os.environ[k].startswith(('"', "'")):
-                    os.environ[k] = v
+# ---------------------------------------------------------------------------
+# Internal helpers
+# ---------------------------------------------------------------------------
+
+def _token() -> str:
+    """Return the Blob token, raising clearly if it is missing."""
+    tok = os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip().strip("'\"")
+    if not tok:
+        raise EnvironmentError(
+            "BLOB_READ_WRITE_TOKEN is not set. "
+            "Add it to .env.local (local) or Vercel project environment (production)."
+        )
+    return tok
 
 
-def run_vercel(*args):
-    """Run a Vercel CLI command and show useful errors."""
-    _ensure_env()
+_BLOB_API = "https://blob.vercel-storage.com"
 
-    # Locate vercel executable on Windows (.cmd, etc.) or Unix
-    cmd = shutil.which("vercel") or shutil.which("vercel.cmd") or "vercel"
 
-    # Ensure token is passed explicitly if available and not already specified
-    token = os.environ.get("BLOB_READ_WRITE_TOKEN", "").strip().strip("'\"")
-    extra_args = []
-    if token and ("blob" in args) and ("--rw-token" not in args) and ("--oidc-token" not in args):
-        extra_args.extend(["--rw-token", token])
+# ---------------------------------------------------------------------------
+# Public API — same signatures as the original cloud_storage.py
+# ---------------------------------------------------------------------------
 
-    result = subprocess.run(
-        [cmd, *args, *extra_args],
-        capture_output=True,
-        text=True,
-        shell=False,
-        env=os.environ
+def upload_block(local_path: Path | str, remote_path: str) -> str:
+    """
+    Upload one encrypted block to Vercel Blob (private access).
+
+    Parameters
+    ----------
+    local_path  : local file to upload
+    remote_path : the pathname to use inside the Blob store
+
+    Returns
+    -------
+    The public URL of the uploaded blob (used for private token-gated download).
+    """
+    local_path = Path(local_path)
+    token = _token()
+
+    with local_path.open("rb") as fh:
+        data = fh.read()
+
+    resp = requests.put(
+        f"{_BLOB_API}/{remote_path}",
+        data=data,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "x-api-version": "7",
+            "x-content-type": "application/octet-stream",
+            # Private access — only accessible with token
+            "x-cache-control-max-age": "0",
+        },
+        timeout=120,
     )
 
-    if result.returncode != 0:
+    if not resp.ok:
         raise RuntimeError(
-            f"Vercel command failed:\n{result.stderr}\n{result.stdout}"
+            f"Blob upload failed [{resp.status_code}]: {resp.text[:400]}"
         )
 
-    if result.stdout:
-        print(result.stdout.strip())
+    result = resp.json()
+    url = result.get("url", "")
+    print(f"Uploaded: {remote_path}  →  {url}")
+    return url
 
 
-def upload_block(local_path, remote_path):
-    """Upload one encrypted block to private Vercel Blob."""
-    local_path = Path(local_path)
+def download_block(remote_path: str, destination: Path | str) -> None:
+    """
+    Download one private Blob object to a local file.
 
-    run_vercel(
-        "blob", "put", str(local_path),
-        "--access", "private",
-        "--pathname", remote_path
-    )
-
-    print(f"Uploaded: {remote_path}")
-
-
-def download_block(remote_path, destination):
-    """Download one private Blob object to a local file."""
+    Parameters
+    ----------
+    remote_path  : the pathname used when uploading (NOT the full URL)
+    destination  : local path to write the downloaded bytes to
+    """
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
+    token = _token()
 
-    run_vercel(
-        "blob", "get", remote_path,
-        "--access", "private",
-        "--output", str(destination)
+    # Construct the download URL.  The Vercel Blob REST API returns the URL
+    # in the upload response; we reconstruct it deterministically here.
+    url = f"{_BLOB_API}/{remote_path}"
+
+    resp = requests.get(
+        url,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "x-api-version": "7",
+        },
+        timeout=120,
+        stream=True,
     )
 
-    if not destination.exists():
-        raise FileNotFoundError(
-            f"Download did not create: {destination}"
+    if not resp.ok:
+        raise RuntimeError(
+            f"Blob download failed [{resp.status_code}] for {remote_path}: {resp.text[:400]}"
         )
 
-    print(f"Downloaded: {remote_path} -> {destination}")
+    with destination.open("wb") as fh:
+        for chunk in resp.iter_content(chunk_size=65536):
+            fh.write(chunk)
+
+    if not destination.exists() or destination.stat().st_size == 0:
+        raise FileNotFoundError(
+            f"Download produced an empty or missing file: {destination}"
+        )
+
+    print(f"Downloaded: {remote_path}  →  {destination}")
