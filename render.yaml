@@ -1,0 +1,19 @@
+# render.yaml — Deploy the Flask backend to Render.com (free tier).
+# Push this repo to GitHub, then import it at https://render.com/new
+#
+# Required environment variables to set in the Render dashboard:
+#   BLOB_READ_WRITE_TOKEN  — from your Vercel Blob store
+
+services:
+  - type: web
+    name: securecloud-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
+    envVars:
+      - key: BLOB_READ_WRITE_TOKEN
+        sync: false          # set manually in the Render dashboard — never commit this value
+      - key: PYTHON_VERSION
+        value: "3.11"

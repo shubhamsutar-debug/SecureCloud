@@ -1,0 +1,52 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+
+# ── Secrets & credentials (NEVER commit these) ────────────────────────────────
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+secret.key
+*.key
+*.pem
+*.p12
+*.pfx
+
+# ── Vercel ────────────────────────────────────────────────────────────────────
+.vercel/
+
+# ── Generated / runtime files ─────────────────────────────────────────────────
+encrypted_blocks/
+downloaded_blocks/
+reconstructed*
+sample.txt
+blob-test.txt
+
+# ── Temporary workspace dirs created by app.py / core.py ─────────────────────
+securecloud_*/
+securecloud_run_*/
+securecloud_cli_*/
+
+# ── Node (package-lock is empty — no need to track it) ───────────────────────
+node_modules/
+package-lock.json
+
+# ── OS / IDE ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~

@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "comment": "SecureCloud — Vercel deployment config. The Python Flask backend cannot run on Vercel's serverless runtime in this project. Deploy the frontend here (or via a static host) and run app.py separately on Render / Railway / a VPS. Set BACKEND_URL in the Vercel project's environment variables to point the frontend at the live backend.",
+  "builds": [
+    {
+      "src": "website/index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/website/index.html"
+    }
+  ]
+}
