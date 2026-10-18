@@ -1,4 +1,4 @@
-cryptography==42.0.8
+cryptography==43.0.3
 flask==3.0.3
 werkzeug==3.0.3
 requests==2.32.3
