@@ -263,46 +263,182 @@
     #log-panel .log-info { color: #93c5fd; }
     #log-panel .log-warn { color: #fbbf24; }
 
-    /* ── Architecture section ────────────────────────────────────────────── */
+    /* ── Architecture diagram ────────────────────────────────────────────── */
     #architecture { scroll-margin-top: 80px; }
-    .pipeline {
+
+    /* Diagram wrapper */
+    .arch-diagram {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* Layer row: label + nodes */
+    .arch-layer {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 0 1rem;
+      align-items: center;
+      position: relative;
+    }
+    .arch-layer-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: right;
+      padding-right: .75rem;
+      border-right: 2px solid var(--border);
+      line-height: 1.3;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .arch-nodes {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: .75rem 0;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+
+    /* Individual node box */
+    .arch-node {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .3rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: .7rem .9rem;
+      min-width: 88px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .arch-node .n-icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .arch-node .n-title {
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .arch-node .n-sub {
+      font-size: .62rem;
+      color: var(--muted);
+      line-height: 1.2;
+    }
+
+    /* Colour themes per layer */
+    .arch-node.blue  { border-color: #bfdbfe; }
+    .arch-node.blue  .n-icon { background: #eff6ff; }
+    .arch-node.purple{ border-color: #ddd6fe; }
+    .arch-node.purple .n-icon { background: #f5f3ff; }
+    .arch-node.green { border-color: #bbf7d0; }
+    .arch-node.green .n-icon { background: #f0fdf4; }
+    .arch-node.orange{ border-color: #fed7aa; }
+    .arch-node.orange .n-icon { background: #fff7ed; }
+
+    /* Connector arrow between nodes */
+    .arch-arrow {
+      flex-shrink: 0;
+      display: flex; align-items: center;
+      padding: 0 4px;
+      color: #cbd5e1;
+    }
+    .arch-arrow svg { display: block; }
+
+    /* Vertical connector between layers */
+    .arch-connector {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 0 1rem;
+      align-items: stretch;
+      height: 28px;
+    }
+    .arch-connector-spacer { border-right: 2px solid var(--border); }
+    .arch-connector-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .arch-connector-line::before {
+      content: '';
+      position: absolute;
+      left: 50%; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #e2e8f0, #e2e8f0);
+      transform: translateX(-50%);
+    }
+    .arch-connector-line::after {
+      content: '';
+      position: absolute;
+      left: 50%; bottom: 0;
+      width: 8px; height: 8px;
+      border-right: 2px solid #94a3b8;
+      border-bottom: 2px solid #94a3b8;
+      transform: translateX(-50%) rotate(45deg) translateY(2px);
+    }
+
+    /* Security callout row */
+    .arch-security {
+      margin-top: 1.5rem;
+      display: grid;
+      gap: .6rem;
+    }
+    .sec-item {
+      display: flex; align-items: flex-start; gap: .6rem;
+      padding: .65rem .9rem;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      font-size: .82rem;
+      color: #166534;
+      line-height: 1.4;
+    }
+    .sec-item .sec-icon {
+      font-size: .95rem; flex-shrink: 0; margin-top: .05rem;
+    }
+
+    /* Tech stack pills */
+    .tech-pills {
       display: flex;
       flex-wrap: wrap;
       gap: .5rem;
-      align-items: center;
-      margin-top: 1.25rem;
+      margin-top: 1rem;
     }
-    .step-chip {
-      display: flex; flex-direction: column; align-items: center;
-      gap: .25rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: .75rem 1rem;
-      min-width: 90px;
-      text-align: center;
+    .tech-pill {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .35rem .85rem;
+      border-radius: 999px;
+      font-size: .78rem; font-weight: 600;
+      border: 1.5px solid;
     }
-    .step-chip .icon { font-size: 1.4rem; }
-    .step-chip .name { font-size: .72rem; font-weight: 600; color: var(--muted); }
-    .arrow { color: var(--primary); font-size: 1.2rem; font-weight: 700; }
+    .tech-pill.py   { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+    .tech-pill.fl   { background: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
+    .tech-pill.cry  { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .tech-pill.vb   { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+    .tech-pill.sha  { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .tech-pill.wk   { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
 
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: .75rem;
-      margin-top: 1.25rem;
-    }
-    .tech-item {
-      display: flex; align-items: center; gap: .6rem;
-      padding: .75rem 1rem;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: .85rem;
-    }
-    .tech-item .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--primary); flex-shrink: 0;
+    @media (max-width: 600px) {
+      .arch-layer { grid-template-columns: 60px 1fr; }
+      .arch-layer-label { font-size: .6rem; }
+      .arch-connector { grid-template-columns: 60px 1fr; }
+      .arch-node { min-width: 72px; padding: .55rem .6rem; }
+      .arch-node .n-icon { width: 28px; height: 28px; font-size: .9rem; }
+      .arch-node .n-title { font-size: .65rem; }
+      .arch-node .n-sub   { font-size: .56rem; }
     }
 
     /* ── Error box ───────────────────────────────────────────────────────── */
@@ -546,47 +682,140 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
       Architecture &amp; Workflow
     </h2>
-
-    <p style="color:var(--muted);font-size:.9rem;margin-bottom:1rem;">
-      Every file is processed entirely server-side. Your browser never sees the encryption key or raw block data.
+    <p style="color:var(--muted);font-size:.875rem;line-height:1.6;">
+      Every file is processed entirely server-side on <strong>Flask</strong>.
+      The browser sends a file and receives results — it never sees the encryption key or raw blocks.
     </p>
 
-    <div class="pipeline">
-      <div class="step-chip"><span class="icon">📤</span><span class="name">File Upload</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">✂️</span><span class="name">Block Split</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">🔒</span><span class="name">Fernet Encrypt</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">☁️</span><span class="name">Vercel Blob</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">📥</span><span class="name">Download</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">🔓</span><span class="name">Decrypt</span></div>
-      <span class="arrow">→</span>
-      <div class="step-chip"><span class="icon">✅</span><span class="name">SHA-256 Verify</span></div>
-    </div>
+    <div class="arch-diagram">
 
-    <div style="margin-top:1.5rem;">
-      <div class="label" style="margin-bottom:.75rem;">Security model</div>
-      <ul style="list-style:none;display:flex;flex-direction:column;gap:.5rem;">
-        <li style="font-size:.875rem;color:var(--muted);display:flex;gap:.5rem;align-items:baseline;">
-          <span style="color:var(--success);font-weight:700;">✓</span>
-          A new AES-256 Fernet key is generated per upload session — keys never leave the server.
-        </li>
-        <li style="font-size:.875rem;color:var(--muted);display:flex;gap:.5rem;align-items:baseline;">
-          <span style="color:var(--success);font-weight:700;">✓</span>
-          Blocks are stored with a unique UUID prefix so different files never overwrite each other.
-        </li>
-        <li style="font-size:.875rem;color:var(--muted);display:flex;gap:.5rem;align-items:baseline;">
-          <span style="color:var(--success);font-weight:700;">✓</span>
-          <code>BLOB_READ_WRITE_TOKEN</code> is an environment variable — never embedded in frontend JS.
-        </li>
-        <li style="font-size:.875rem;color:var(--muted);display:flex;gap:.5rem;align-items:baseline;">
-          <span style="color:var(--success);font-weight:700;">✓</span>
-          SHA-256 hash comparison catches any corruption or tampering during transit.
-        </li>
-      </ul>
+      <!-- Layer 1 · Browser -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Browser</div>
+        <div class="arch-nodes">
+          <div class="arch-node blue">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            </div>
+            <div class="n-title">File Select</div>
+            <div class="n-sub">Drag &amp; drop<br>or browse</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node blue">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M8 10h8M8 14h5"/></svg>
+            </div>
+            <div class="n-title">HTML / JS UI</div>
+            <div class="n-sub">Progress &amp;<br>results display</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node blue">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.09"/></svg>
+            </div>
+            <div class="n-title">Download</div>
+            <div class="n-sub">Reconstructed<br>file</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vertical connector -->
+      <div class="arch-connector">
+        <div class="arch-connector-spacer"></div>
+        <div class="arch-connector-line"></div>
+      </div>
+
+      <!-- Layer 2 · Flask Backend -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Flask<br>Backend</div>
+        <div class="arch-nodes">
+          <div class="arch-node purple">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <div class="n-title">Receive File</div>
+            <div class="n-sub">Werkzeug<br>sanitise</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node purple">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+            </div>
+            <div class="n-title">Split Blocks</div>
+            <div class="n-sub">1 KB chunks<br>core.py</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node purple">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="n-title">Fernet Encrypt</div>
+            <div class="n-sub">AES-256-CBC<br>+ HMAC key</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node purple">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="n-title">SHA-256</div>
+            <div class="n-sub">Hash original<br>&amp; verify</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vertical connector -->
+      <div class="arch-connector">
+        <div class="arch-connector-spacer"></div>
+        <div class="arch-connector-line"></div>
+      </div>
+
+      <!-- Layer 3 · Vercel Blob -->
+      <div class="arch-layer">
+        <div class="arch-layer-label">Vercel<br>Blob</div>
+        <div class="arch-nodes">
+          <div class="arch-node orange">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+            </div>
+            <div class="n-title">Upload Blocks</div>
+            <div class="n-sub">Private store<br>UUID path</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node orange">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            </div>
+            <div class="n-title">Private Object<br>Storage</div>
+            <div class="n-sub">Token-gated<br>no public URL</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node orange">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.09"/></svg>
+            </div>
+            <div class="n-title">Download<br>Blocks</div>
+            <div class="n-sub">Token auth<br>vercel SDK</div>
+          </div>
+          <div class="arch-arrow"><svg width="20" height="12" viewBox="0 0 20 12"><path d="M0 6h16M12 2l6 4-6 4" stroke="#cbd5e1" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div class="arch-node green">
+            <div class="n-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/><polyline points="9 16 11 18 15 14"/></svg>
+            </div>
+            <div class="n-title">Decrypt &amp;<br>Reconstruct</div>
+            <div class="n-sub">Fernet key<br>in server RAM</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /arch-diagram -->
+
+    <!-- Security guarantees -->
+    <div class="arch-security" style="margin-top:1.5rem;">
+      <div class="label" style="margin-bottom:.25rem;">Security guarantees</div>
+      <div class="sec-item"><span class="sec-icon">🔑</span>A new Fernet key is generated per upload — it lives only in server RAM and is never sent to the browser.</div>
+      <div class="sec-item"><span class="sec-icon">🆔</span>Each run gets a UUID4 path prefix — blocks from different files never collide in the Blob store.</div>
+      <div class="sec-item"><span class="sec-icon">🔒</span><code style="font-size:.78rem;background:#dcfce7;padding:.1rem .3rem;border-radius:4px;">BLOB_READ_WRITE_TOKEN</code> is an environment variable — never embedded in any frontend code.</div>
+      <div class="sec-item"><span class="sec-icon">✅</span>SHA-256 hashes are compared after reconstruction — any corruption or tampering causes an explicit FAIL.</div>
     </div>
   </div>
 
@@ -596,15 +825,32 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
       Technologies Used
     </h2>
-    <div class="tech-grid">
-      <div class="tech-item"><div class="dot"></div><div><strong>Python 3</strong> · Core processing language</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>Flask</strong> · HTTP backend & file routing</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>cryptography</strong> · Fernet AES-256-CBC + HMAC</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>Vercel Blob</strong> · Private cloud object storage</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>SHA-256</strong> · End-to-end integrity verification</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>HTML / CSS / JS</strong> · Vanilla SaaS-style frontend</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>Werkzeug</strong> · Secure file-name sanitisation</div></div>
-      <div class="tech-item"><div class="dot"></div><div><strong>UUID v4</strong> · Per-run collision-free block paths</div></div>
+    <p style="font-size:.85rem;color:var(--muted);margin-bottom:.25rem;">Only the libraries actually imported and running in this project.</p>
+    <div class="tech-pills">
+      <span class="tech-pill py">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Python 3.12
+      </span>
+      <span class="tech-pill fl">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+        Flask 3
+      </span>
+      <span class="tech-pill cry">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Fernet · AES-256-CBC
+      </span>
+      <span class="tech-pill sha">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        SHA-256
+      </span>
+      <span class="tech-pill vb">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
+        Vercel Blob (private)
+      </span>
+      <span class="tech-pill wk">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Werkzeug
+      </span>
     </div>
   </div>
 
@@ -620,9 +866,9 @@
     <div class="footer-col">
       <h4>Backend</h4>
       <ul>
-        <li>Flask (Python)</li>
-        <li>cryptography · Fernet</li>
-        <li>Vercel CLI · Blob SDK</li>
+        <li>Python 3.12 · Flask 3</li>
+        <li>cryptography · Fernet AES-256</li>
+        <li>Vercel Blob Python SDK</li>
         <li>SHA-256 integrity</li>
       </ul>
     </div>
@@ -638,8 +884,8 @@
     <div class="footer-col">
       <h4>Deployment</h4>
       <ul>
-        <li>Backend → Render / Railway</li>
-        <li>Frontend → Vercel</li>
+        <li>Vercel (Flask serverless)</li>
+        <li>Private Blob object storage</li>
         <li>Secrets via env vars</li>
         <li>HTTPS by default</li>
       </ul>
